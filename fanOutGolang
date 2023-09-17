@@ -1,0 +1,39 @@
+// You can edit this code!
+// Click here and start typing.
+package main
+
+import (
+	"fmt"
+	"sync"
+)
+
+func main() {
+	var wg sync.WaitGroup
+	//var m sync.Mutex
+
+	intChan := make(chan int)
+
+	wg.Add(10)
+
+	go func(intChan2 chan int) {
+		for val := range intChan2 {
+			fmt.Printf("User %d\n", val)
+			wg.Done()
+		}
+	}(intChan)
+
+	go func() {
+		for {
+			intChan <- 1
+		}
+	}()
+
+	go func() {
+		for {
+			intChan <- 2
+		}
+	}()
+
+	wg.Wait()
+	close(intChan)
+}
